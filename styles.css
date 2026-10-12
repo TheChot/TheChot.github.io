@@ -1,0 +1,344 @@
+/* Chot Makes Games — links page
+   Palette taken from the dev icon so the avatar sits on the page rather than on top of it:
+   the same crimson behind it, bone white for type, and a cyan/magenta pair used only for the
+   glitch channel split. */
+
+:root {
+  --red-deep:   #6d1316;
+  --red:        #8f1a1d;
+  --red-light:  #b02327;
+  --bone:       #f4ece2;
+  --ink:        #14100f;
+  --cyan:       #35e8ff;
+  --magenta:    #ff2e88;
+  --grey:       #b9b4ad;
+
+  /* The hard offset under every card. Scales down on small screens, further down the file. */
+  --pop: 6px;
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--red);
+  color: var(--bone);
+  font-family: 'VT323', 'Courier New', monospace;
+  /* A faint grid plus a radial darkening at the edges — enough texture that the flat red
+     doesn't read as an unstyled page, quiet enough not to fight the buttons. */
+  background-image:
+    radial-gradient(ellipse at 50% 0%, rgba(255,255,255,.10), transparent 60%),
+    radial-gradient(ellipse at 50% 100%, rgba(0,0,0,.45), transparent 65%),
+    linear-gradient(rgba(0,0,0,.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,.07) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px;
+  background-attachment: fixed;
+}
+
+/* ---------- CRT overlay ---------- */
+
+.crt {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  /* Scanlines. 3px pitch reads as a screen; 2px shimmers on high-DPI phones. */
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0,0,0,.16) 0px,
+    rgba(0,0,0,.16) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  animation: flicker 4s steps(2) infinite;
+}
+
+.crt::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  box-shadow: inset 0 0 160px rgba(0,0,0,.55);
+}
+
+@keyframes flicker {
+  0%, 97%  { opacity: 1; }
+  98%      { opacity: .82; }
+  100%     { opacity: 1; }
+}
+
+/* ---------- Layout ---------- */
+
+.page {
+  width: min(560px, 100%);
+  margin: 0 auto;
+  padding: clamp(32px, 7vw, 64px) clamp(16px, 5vw, 28px) 56px;
+  /* Keeps the whole column clear of a phone's home indicator and notch. */
+  padding-bottom: calc(56px + env(safe-area-inset-bottom));
+}
+
+/* ---------- Profile ---------- */
+
+.profile {
+  text-align: center;
+  margin-bottom: clamp(28px, 6vw, 44px);
+}
+
+.avatar-frame {
+  width: clamp(120px, 34vw, 168px);
+  height: clamp(120px, 34vw, 168px);
+  margin: 0 auto clamp(18px, 4vw, 26px);
+  border: 4px solid var(--ink);
+  box-shadow: var(--pop) var(--pop) 0 rgba(0,0,0,.55);
+  background: var(--red-deep);
+  overflow: hidden;
+}
+
+.avatar {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* The art is pixel art — let it stay crisp instead of being smoothed into mush. */
+  image-rendering: pixelated;
+}
+
+/* ---------- Glitching title ---------- */
+
+h1.glitch {
+  position: relative;
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  font-size: clamp(17px, 6.2vw, 31px);
+  line-height: 1.5;
+  margin: 0 0 14px;
+  color: var(--bone);
+  text-shadow: 3px 3px 0 var(--ink);
+  letter-spacing: 1px;
+}
+
+/* Two copies of the headline stacked exactly over the real one, each tinted and nudged a few
+   pixels sideways, then sliced by an animated clip-path. That is the whole trick: the slices
+   only expose a band at a time, so the colour fringe appears to tear across the text rather
+   than sitting under it. inset:0 keeps all three boxes identical, which is what makes the
+   layers wrap at the same points when the title breaks onto two lines on a phone. */
+h1.glitch::before,
+h1.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  text-shadow: none;
+}
+
+h1.glitch::before {
+  color: var(--cyan);
+  transform: translate(-3px, -1px);
+  animation: glitch-a 3.4s infinite steps(1);
+}
+
+h1.glitch::after {
+  color: var(--magenta);
+  transform: translate(3px, 1px);
+  animation: glitch-b 2.9s infinite steps(1);
+}
+
+/* Mostly hidden (clipped to nothing), with brief tears — a constant wobble would be
+   exhausting to look at and would make the name hard to read, which is the one thing this
+   page cannot afford. */
+@keyframes glitch-a {
+  0%, 84%   { clip-path: inset(100% 0 0 0); }
+  86%       { clip-path: inset(12% 0 68% 0); }
+  88%       { clip-path: inset(74% 0 8% 0); }
+  90%       { clip-path: inset(38% 0 42% 0); }
+  92%, 100% { clip-path: inset(100% 0 0 0); }
+}
+
+@keyframes glitch-b {
+  0%, 86%   { clip-path: inset(100% 0 0 0); }
+  88%       { clip-path: inset(58% 0 26% 0); }
+  90%       { clip-path: inset(6% 0 80% 0); }
+  93%       { clip-path: inset(44% 0 36% 0); }
+  95%, 100% { clip-path: inset(100% 0 0 0); }
+}
+
+.tagline {
+  font-size: clamp(19px, 4.6vw, 24px);
+  color: var(--grey);
+  margin: 0;
+  letter-spacing: .5px;
+}
+
+.caret {
+  animation: blink 1.1s steps(1) infinite;
+}
+
+@keyframes blink {
+  0%, 50%   { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+/* ---------- Section labels ---------- */
+
+.section-label {
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(244,236,226,.72);
+  text-align: center;
+  margin: 0 0 14px;
+}
+
+.links + .section-label { margin-top: 30px; }
+
+/* ---------- Link cards ---------- */
+
+.links {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.link-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  min-height: 68px;
+  background: var(--bone);
+  color: var(--ink);
+  border: 3px solid var(--ink);
+  text-decoration: none;
+  /* The "pop": a hard, un-blurred offset shadow instead of a soft one. On press the card
+     slides into its own shadow, so the button physically travels the distance it was
+     floating — that is what sells the click on a touch screen, where there is no hover. */
+  box-shadow: var(--pop) var(--pop) 0 var(--ink);
+  transition: transform .09s ease-out, box-shadow .09s ease-out, background-color .09s ease-out;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.link-card:hover,
+.link-card:focus-visible {
+  background: #fff;
+  transform: translate(-2px, -2px);
+  box-shadow: calc(var(--pop) + 2px) calc(var(--pop) + 2px) 0 var(--ink);
+}
+
+.link-card:active {
+  transform: translate(var(--pop), var(--pop));
+  box-shadow: 0 0 0 var(--ink);
+}
+
+.link-card:focus-visible {
+  outline: 3px solid var(--cyan);
+  outline-offset: 3px;
+}
+
+.thumb {
+  width: 48px;
+  height: 48px;
+  flex: 0 0 auto;
+  object-fit: cover;
+  border: 2px solid var(--ink);
+  image-rendering: pixelated;
+}
+
+.icon-slot {
+  width: 48px;
+  height: 48px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  background: var(--red);
+  border: 2px solid var(--ink);
+  color: var(--bone);
+}
+
+.icon-slot svg {
+  width: 26px;
+  height: 26px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.link-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.link-title {
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  font-size: clamp(10px, 3.1vw, 13px);
+  line-height: 1.45;
+  /* Long names wrap rather than overflow the card — Press Start 2P is very wide per
+     character, and "Outpost: Stardust" is already near the limit on a 320px screen. */
+  overflow-wrap: anywhere;
+}
+
+.link-sub {
+  font-size: 18px;
+  line-height: 1;
+  color: #6c625c;
+  letter-spacing: .5px;
+}
+
+.chev {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: .55;
+}
+
+/* ---------- Footer ---------- */
+
+.footer {
+  margin-top: 40px;
+  text-align: center;
+}
+
+.press-start {
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  font-size: 9px;
+  letter-spacing: 1px;
+  color: rgba(244,236,226,.6);
+  margin: 0;
+  line-height: 1.8;
+}
+
+/* ---------- Small screens ---------- */
+
+@media (max-width: 420px) {
+  :root { --pop: 5px; }
+
+  .link-card { gap: 11px; padding: 11px 12px; }
+  .thumb, .icon-slot { width: 44px; height: 44px; }
+  .chev { width: 17px; }
+  .section-label { font-size: 10px; }
+}
+
+/* ---------- Motion ---------- */
+
+/* Everything decorative here is motion: the tear, the flicker, the blinking caret. A visitor
+   who has asked their OS for less of it gets a still page that still says the same thing. */
+@media (prefers-reduced-motion: reduce) {
+  .crt { animation: none; }
+  .caret { animation: none; }
+
+  h1.glitch::before,
+  h1.glitch::after { display: none; }
+
+  .link-card { transition: none; }
+}
